@@ -1,0 +1,5 @@
+# Change these at your peril:
+export PROJECT_NAME=asf_noise_consultation
+export REPO_NAME=asf_noise_consultation
+export DESCRIPTION=Simple statistics for consultation response to DESNZ on heat pump noise.
+export PROJECT_OPENNESS=public
