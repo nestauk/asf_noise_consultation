@@ -616,6 +616,81 @@ modes
 # %%
 f, ax = pyplot.subplots(figsize=(8, 5))
 
+colours = {
+    "Urban major conurbation": "#08519c",
+    "Urban minor conurbation": "#3182bd",
+    "Urban city and town": "#6baed6",
+    "Urban city and town in a sparse setting": "#bdd7e7",
+    "Rural town and fringe": "#8c2d04",
+    "Rural town and fringe in a sparse setting": "#d94801",
+    "Rural village and dispersed": "#f16913",
+    "Rural village and dispersed in a sparse setting": "#fd8d3c",
+}
+
+modes = {}
+for setting in colours.keys():
+    z = gaussian_kde(
+        ruc11_msoa.loc[
+            lambda df: df["Rural Urban Classification 2011 (10 fold)"] == setting,
+            "Total: Percentage of addresses with private outdoor space",
+        ]
+    ).evaluate(numpy.linspace(0, 1, 1001))
+    ax.plot(numpy.linspace(0, 1, 1001), z, label=setting, color=colours[setting])
+    modes[setting] = numpy.linspace(0, 1, 1001)[numpy.argmax(z)]
+
+ax.set_xticks(numpy.linspace(0, 1, 11))
+ax.legend()
+ax.grid()
+ax.set_ylabel("Density of Addresses")
+ax.set_xlabel("Proportion of addresses with private outdoor space")
+
+# %%
+lookup = {
+    "Urban major conurbation": "Urban",
+    "Urban minor conurbation": "Urban",
+    "Urban city and town": "Urban",
+    "Urban city and town in a sparse setting": "Urban",
+    "Rural town and fringe": "Rural town and fringe",
+    "Rural town and fringe in a sparse setting": "Rural town and fringe in a sparse setting",
+    "Rural village and dispersed": "Rural village and dispersed",
+    "Rural village and dispersed in a sparse setting": "Rural village and dispersed in a sparse setting",
+}
+
+ruc11_msoa["ruc_condense"] = ruc11_msoa[
+    "Rural Urban Classification 2011 (10 fold)"
+].map(lookup)
+
+# %%
+f, ax = pyplot.subplots(figsize=(8, 5))
+
+colours = {
+    "Urban": "#3182bd",
+    "Rural town and fringe": "#8c2d04",
+    "Rural town and fringe in a sparse setting": "#d94801",
+    "Rural village and dispersed": "#f16913",
+    "Rural village and dispersed in a sparse setting": "#fd8d3c",
+}
+
+modes = {}
+for setting in colours.keys():
+    z = gaussian_kde(
+        ruc11_msoa.loc[
+            lambda df: df["ruc_condense"] == setting,
+            "Total: Percentage of addresses with private outdoor space",
+        ]
+    ).evaluate(numpy.linspace(0, 1, 1001))
+    ax.plot(numpy.linspace(0, 1, 1001), z, label=setting, color=colours[setting])
+    modes[setting] = numpy.linspace(0, 1, 1001)[numpy.argmax(z)]
+
+ax.set_xticks(numpy.linspace(0, 1, 11))
+ax.legend()
+ax.grid()
+ax.set_ylabel("Density of Addresses")
+ax.set_xlabel("Proportion of addresses with private outdoor space")
+
+# %%
+f, ax = pyplot.subplots(figsize=(8, 5))
+
 modes = {}
 for setting in ["Urban", "Rural"]:
     z = gaussian_kde(
@@ -635,6 +710,37 @@ ax.set_xlabel("Average size of private outdoor space ($\mathrm{m}^{2}$)")
 
 # %%
 modes
+
+# %%
+f, ax = pyplot.subplots(figsize=(8, 5))
+
+colours = {
+    "Urban major conurbation": "#08519c",
+    "Urban minor conurbation": "#3182bd",
+    "Urban city and town": "#6baed6",
+    "Urban city and town in a sparse setting": "#bdd7e7",
+    "Rural town and fringe": "#8c2d04",
+    "Rural town and fringe in a sparse setting": "#d94801",
+    "Rural village and dispersed": "#f16913",
+    "Rural village and dispersed in a sparse setting": "#fd8d3c",
+}
+
+modes = {}
+for setting in colours.keys():
+    z = gaussian_kde(
+        ruc11_msoa.loc[
+            lambda df: df["Rural Urban Classification 2011 (10 fold)"] == setting,
+            "Total: Average size of private outdoor space (m2)",
+        ]
+    ).evaluate(numpy.linspace(0, 2_500, 1001))
+    ax.plot(numpy.linspace(0, 2_500, 1001), z, label=setting, color=colours[setting])
+    modes[setting] = numpy.linspace(0, 2_500, 1001)[numpy.argmax(z)]
+
+ax.set_xticks(numpy.linspace(0, 2_500, 11))
+ax.legend()
+ax.grid()
+ax.set_ylabel("Density of Addresses")
+ax.set_xlabel("Average size of private outdoor space ($\mathrm{m}^{2}$)")
 
 # %% [markdown]
 # ### Houses

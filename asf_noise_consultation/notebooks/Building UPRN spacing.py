@@ -351,3 +351,61 @@ ax.set_ylabel("Density")
 
 # %%
 modes
+
+# %%
+lookup = {
+    "Urban major conurbation": "Urban",
+    "Urban minor conurbation": "Urban",
+    "Urban city and town": "Urban",
+    "Urban city and town in a sparse setting": "Urban",
+    "Rural town and fringe": "Rural town and fringe",
+    "Rural town and fringe in a sparse setting": "Rural town and fringe in a sparse setting",
+    "Rural village": "Rural village",
+    "Rural village in a sparse setting": "Rural village in a sparse setting",
+    "Rural hamlets and isolated dwellings": "Rural hamlets and isolated dwellings",
+    "Rural hamlets and isolated dwellings in a sparse setting": "Rural hamlets and isolated dwellings in a sparse setting",
+}
+
+ruc11_oa["condensed_ru11"] = ruc11_oa["Rural Urban Classification 2011 (10 fold)"].map(
+    lookup
+)
+
+# %%
+## Collapse Urban classes for clarity
+
+f, ax = pyplot.subplots(figsize=(9, 5))
+
+colours = {
+    "Urban": "#3182bd",
+    "Rural town and fringe": "#8c2d04",
+    "Rural town and fringe in a sparse setting": "#d94801",
+    "Rural village": "#f16913",
+    "Rural village in a sparse setting": "#fd8d3c",
+    "Rural hamlets and isolated dwellings": "#fdae6b",
+    "Rural hamlets and isolated dwellings in a sparse setting": "#fdd0a2",
+}
+
+modes = {}
+for setting in colours.keys():
+    z = gaussian_kde(
+        (
+            ruc11_oa.merge(nns, left_on="Output Area 2011 Code", right_on="OA11CD")
+            .loc[
+                lambda df: df["condensed_ru11"] == setting,
+                "Mean Nearest Neighbour",
+            ]
+            .fillna(0)
+        )
+    ).evaluate(numpy.linspace(0, 100, 1001))
+    modal_value = numpy.linspace(0, 100, 1001)[numpy.argmax(z)]
+    modes[setting] = modal_value
+    ax.plot(
+        numpy.linspace(0, 100, 1001),
+        z,
+        label="All Urban" if setting == "Urban" else setting,
+        color=colours[setting],
+    )
+
+ax.legend(fontsize=9)
+ax.set_xlabel("Mean Distance to Nearest Neighbour UPRN (m)")
+ax.set_ylabel("Density")
